@@ -3,7 +3,7 @@ def jettyUrl = 'http://localhost:8081/'
 stage 'Dev'
 node {
     checkout scm
-    mvn '-o clean package'
+    mvn 'clean package'
     //archive 'target/x.war'
 }
 
