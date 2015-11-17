@@ -29,7 +29,7 @@ try {
 stage name: 'Production', concurrency: 1
 node {
     //sh "wget -O - -S ${jettyUrl}staging/"
-    echo 'Production server looks to be alive'
+    //echo 'Production server looks to be alive'
     deploy 'production'
     echo "Deployed to ${jettyUrl}production/"
 }
