@@ -35,7 +35,8 @@ node {
 }
 
 def mvn(args) {
-    sh "${tool 'Maven 3.x'}/bin/mvn ${args}"
+// tool name should be based on Jenkins Master Tool configuration
+    sh "${tool 'mvn-3.3.3-x'}/bin/mvn ${args}"
 }
 
 def runTests(duration) {
