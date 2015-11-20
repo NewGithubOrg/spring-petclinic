@@ -1,10 +1,10 @@
-def jettyUrl = 'http://localhost:8081/'
+
 
 stage 'Dev'
 node {
     checkout scm
-    mvn '-o clean package'
-    //archive 'target/x.war'
+    mvn 'clean package'
+    archive 'target/x.war'
 }
 
 stage 'QA'
@@ -28,45 +28,28 @@ try {
 
 stage name: 'Production', concurrency: 1
 node {
-    //sh "wget -O - -S ${jettyUrl}staging/"
-    echo 'Production server looks to be alive'
     deploy 'production'
-    echo "Deployed to ${jettyUrl}production/"
+    echo "Deployed to production"
 }
 
 def mvn(args) {
-    sh "${tool 'Maven 3.x'}/bin/mvn ${args}"
+// tool name should be based on Jenkins Master Tool configuration
+    sh "${tool 'mvn-3.3.3-x'}/bin/mvn ${args}"
 }
 
 def runTests(duration) {
     node {
-        checkout scm
         sh "sleep ${duration}"
-        /*
-        runWithServer {url ->
-            mvn "-o -f sometests test -Durl=${url} -Dduration=${duration}"
-        } */
     }
 }
 
 def deploy(id) {
-    // unarchive mapping: ['target/x.war' : 'x.war']
-    // sh "cp x.war /tmp/webapps/${id}.war"
+    unarchive mapping: ['target/x.war' : 'x.war']
+    sh "cp x.war /tmp/webapps/${id}.war"
     sh "sleep 10"
 }
 
 def undeploy(id) {
-   // sh "rm /tmp/webapps/${id}.war"
+    sh "rm /tmp/webapps/${id}.war"
 }
 
-def runWithServer(body) {
-    def jettyUrl = 'http://localhost:8081/' // TODO why is this not inherited from the top-level scope?
-    def id = UUID.randomUUID().toString()
-    deploy id
-    
-    try {
-        body.call "${jettyUrl}${id}/"
-    } finally {
-        undeploy id
-    }
-}
